@@ -21,44 +21,62 @@ const db = getDatabase(app);
 
 export default function App() {
   const [led, setLed] = useState(false);
+  const [buzzer, setBuzzer] = useState(false);
+  const [temperature, setTemperature] = useState(0);
+  const [humidity, setHumidity] = useState(0);
 
   /* 🔄 READ FROM FIREBASE */
   useEffect(() => {
     const ledRef = ref(db, "LED");
+    const buzzerRef = ref(db, "Buzzer");
+    const dhtRef = ref(db, "DHT11");
 
-    onValue(ledRef, (snapshot) => {
-      const value = snapshot.val();
-      setLed(value === 1);
+    onValue(ledRef, (snapshot) => setLed(snapshot.val() === 1));
+    onValue(buzzerRef, (snapshot) => setBuzzer(snapshot.val() === 1));
+    onValue(dhtRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setTemperature(data.temperature);
+        setHumidity(data.humidity);
+      }
     });
   }, []);
 
-  /* 🎛 TOGGLE LED */
-  const toggleLed = () => {
-    set(ref(db, "LED"), led ? 0 : 1);
-  };
+  /* 🎛 TOGGLE LED & BUZZER */
+  const toggleLed = () => set(ref(db, "LED"), led ? 0 : 1);
+  const toggleBuzzer = () => set(ref(db, "Buzzer"), buzzer ? 0 : 1);
 
   return (
     <div className="container">
-      <h1 className="title">Smart LED Dashboard</h1>
+      <h1 className="title">Smart Dashboard</h1>
 
       <div className="grid">
 
         {/* LED CONTROL */}
         <div className="card">
           <h2>LED Control</h2>
-
           <label className="switch">
-            <input
-              type="checkbox"
-              checked={led}
-              onChange={toggleLed}
-            />
+            <input type="checkbox" checked={led} onChange={toggleLed} />
             <span className="slider"></span>
           </label>
+          <p className={led ? "on" : "off"}>{led ? "LED ON" : "LED OFF"}</p>
+        </div>
 
-          <p className={led ? "on" : "off"}>
-            {led ? "LED ON" : "LED OFF"}
-          </p>
+        {/* BUZZER CONTROL */}
+        <div className="card">
+          <h2>Buzzer Control</h2>
+          <label className="switch">
+            <input type="checkbox" checked={buzzer} onChange={toggleBuzzer} />
+            <span className="slider"></span>
+          </label>
+          <p className={buzzer ? "on" : "off"}>{buzzer ? "BUZZER ON" : "BUZZER OFF"}</p>
+        </div>
+
+        {/* DHT11 SENSOR */}
+        <div className="card">
+          <h2>DHT11 Sensor</h2>
+          <p>Temperature: {temperature} °C</p>
+          <p>Humidity: {humidity} %</p>
         </div>
 
         {/* STATS */}
@@ -71,7 +89,11 @@ export default function App() {
             </div>
             <div>
               <h3>Status</h3>
-              <p>{led ? "Active" : "Idle"}</p>
+              <p>{led ? "LED Active" : "Idle"}</p>
+            </div>
+            <div>
+              <h3>Buzzer</h3>
+              <p>{buzzer ? "ON" : "OFF"}</p>
             </div>
             <div>
               <h3>Cloud</h3>
@@ -87,6 +109,9 @@ export default function App() {
             <li>System Online</li>
             <li>Firebase Connected</li>
             <li>{led ? "LED Turned ON" : "LED Turned OFF"}</li>
+            <li>{buzzer ? "Buzzer Turned ON" : "Buzzer Turned OFF"}</li>
+            <li>Temp: {temperature} °C</li>
+            <li>Humidity: {humidity} %</li>
           </ul>
         </div>
 
