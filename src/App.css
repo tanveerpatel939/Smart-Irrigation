@@ -1,70 +1,190 @@
+/* ===== Global Styles ===== */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  background: linear-gradient(-45deg, #0f172a, #1e293b, #7f1d1d, #1e3a8a);
+  background-size: 400% 400%;
+  animation: gradientMove 12s ease infinite;
   color: white;
   text-align: center;
 }
 
-.header {
-  font-size: 28px;
-  font-weight: bold;
-  padding: 20px;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
+/* Animated Background */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
+/* ===== Main Wrapper ===== */
+.main {
+  min-height: 100vh;
+  transition: background 0.6s ease;
+}
+
+/* Fire Alert Background */
+.alert-bg {
+  background: radial-gradient(circle at center, #7f1d1d, #020617);
+  animation: fireGlow 1.2s infinite alternate;
+}
+
+@keyframes fireGlow {
+  from { box-shadow: inset 0 0 40px rgba(255,0,0,0.3); }
+  to { box-shadow: inset 0 0 80px rgba(255,80,0,0.6); }
+}
+
+/* ===== Header ===== */
+h1 {
+  font-size: 30px;
+  font-weight: bold;
+  padding: 22px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(15px);
+  letter-spacing: 1px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+  margin: 0;
+}
+
+/* ===== Grid Layout ===== */
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 25px;
-  padding: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  padding: 50px;
 }
 
+/* ===== Glass Cards ===== */
 .card {
   background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(12px);
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-  transition: 0.3s ease;
+  backdrop-filter: blur(18px);
+  padding: 35px;
+  border-radius: 25px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+  transition: 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glowing Border */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 25px;
+  padding: 2px;
+  background: linear-gradient(45deg, #38bdf8, #ef4444);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 .card:hover {
-  transform: translateY(-8px) scale(1.03);
+  transform: translateY(-10px) scale(1.04);
+  box-shadow: 0 20px 45px rgba(0,0,0,0.8);
 }
 
 .card h2 {
   margin: 0;
-  font-size: 18px;
-  opacity: 0.9;
+  font-size: 20px;
+  opacity: 0.95;
+  letter-spacing: 0.5px;
 }
 
+/* ===== Fire Status Light ===== */
+.status-light {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin: 25px auto;
+  background: #16a34a;
+  box-shadow: 0 0 25px #16a34a;
+  transition: 0.4s ease;
+}
+
+/* SAFE */
+.status-light.safe {
+  background: #16a34a;
+  box-shadow: 0 0 25px #16a34a;
+}
+
+/* FIRE */
+.status-light.fire {
+  background: #dc2626;
+  box-shadow: 0 0 40px red;
+  animation: firePulse 1s infinite;
+}
+
+/* Fire glow animation */
+@keyframes firePulse {
+  0% { box-shadow: 0 0 10px red; }
+  50% { box-shadow: 0 0 45px orange; }
+  100% { box-shadow: 0 0 10px red; }
+}
+
+/* ===== Status Text ===== */
+.safe-text {
+  color: #22c55e;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.danger-text {
+  color: #ef4444;
+  font-size: 22px;
+  font-weight: bold;
+  animation: textBlink 1s infinite;
+}
+
+@keyframes textBlink {
+  50% { opacity: 0.4; }
+}
+
+/* ===== Gas Level ===== */
 .card p {
-  font-size: 32px;
-  margin: 15px 0;
+  font-size: 36px;
+  margin: 18px 0;
   font-weight: bold;
   color: #38bdf8;
 }
 
-.status {
-  display: inline-block;
-  padding: 6px 15px;
+.progress-bar {
+  width: 100%;
+  height: 14px;
+  background: rgba(255,255,255,0.2);
   border-radius: 20px;
+  overflow: hidden;
+  margin-top: 15px;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #facc15, #dc2626);
+  transition: width 0.4s ease;
+}
+
+/* ===== Alert History ===== */
+.history {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+}
+
+.history li {
+  padding: 10px;
+  margin: 8px 0;
+  background: rgba(0,0,0,0.35);
+  border-radius: 10px;
   font-size: 14px;
-  font-weight: bold;
+  box-shadow: inset 0 0 10px rgba(255,0,0,0.2);
 }
 
-.status.good {
-  background: #16a34a;
-}
-
-.status.warning {
-  background: #dc2626;
-}
-
+/* ===== Footer (Optional) ===== */
 .footer {
-  padding: 15px;
+  padding: 18px;
   font-size: 14px;
-  opacity: 0.7;
+  opacity: 0.75;
+  letter-spacing: 0.5px;
 }
